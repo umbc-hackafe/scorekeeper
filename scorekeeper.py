@@ -1,4 +1,4 @@
-import twython
+import twitter
 import flask
 import json
 
@@ -7,20 +7,26 @@ BASE_RESPONSE = {
     "response": {}
 }
 
-TWITTER_APP_KEY = 'ntLFB6p6IApzcEECKF4NdHsdJ'
-TWITTER_APP_KEY_SECRET = '9AkI8vTZwxPXFrBMzcENZUscp9TEAJyFdXwCVrN3fVFZLifalO' 
-TWITTER_ACCESS_TOKEN = '808021956-h3pMy2nfM2afQE6aC8hDTl69bb0JDu2hutYUqdoY'
-TWITTER_ACCESS_TOKEN_SECRET = 'RLozX4oMPu7rUpfehHGEv6WZXS8xgbV4RdjjfmgbIgboV'
+with open(".scorekeeper_keys") as f:
+    keys = json.load(f)
 
-twitter = twython.Twython(app_key=TWITTER_APP_KEY,
-                          app_secret=TWITTER_APP_KEY_SECRET,
-                          oauth_token=TWITTER_ACCESS_TOKEN,
-                          oauth_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
+TWITTER_APP_KEY = keys["api_key"]
+TWITTER_APP_KEY_SECRET = keys["api_secret"]
+TWITTER_ACCESS_TOKEN = keys["access_token"]
+TWITTER_ACCESS_TOKEN_SECRET = keys["token_secret"]
 
+twapi = twitter.Twitter(auth=twitter.OAuth(
+    TWITTER_ACCESS_TOKEN,
+    TWITTER_ACCESS_TOKEN_SECRET,
+    TWITTER_APP_KEY,
+    TWITTER_APP_KEY_SECRET))
 
 api = flask.Flask(__name__)
 
 def do_tweet(person, reason):
+    status = twapi.update("@xn__hackaf_gva Point to {}: {}".format(person.title(),
+                                                                       reason))
+    print("Status:", status)
     print("Person", person, "\nReason", reason)
 
 @api.route('/', methods=['POST', 'GET'])
