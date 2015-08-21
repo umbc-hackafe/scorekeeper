@@ -17,41 +17,41 @@ twitter = twython.Twython(app_key=TWITTER_APP_KEY,
                           oauth_token=TWITTER_ACCESS_TOKEN,
                           oauth_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
 
-DATAS = {}
 
 api = flask.Flask(__name__)
 
 def do_tweet(person, reason):
     print("Person", person, "\nReason", reason)
 
-@api.route('/')
-def alexa(data=None, *args, **kwargs):
+@api.route('/', methods=['POST', 'GET'])
+def alexa():
+    data = flask.request.data
     if data:
         data = json.loads(data.decode('UTF-8'))
     else:
         raise ValueError("Invalid arguments; no data")
 
     with open('/tmp/alexa_test', 'a+') as f:
-        f.write("Data  : " + json.dumps(data, indent=2, separators=(',', ': ')) + '\n')
+        print("Data  : " + json.dumps(data, indent=2, separators=(',', ': ')) + '\n')
 
     request = data["request"]
     req_type = request["type"]
     session_id = data["session"]["sessionId"]
-    DATAS[session_id] = {}
+
+    attrs = data["session"].get("attributes", {})
 
     if req_type == "LaunchRequest":
         resp = dict(BASE_RESPONSE)
         resp["response"] = {
             "shouldEndSession": False
         }
-        return json.dumps(resp)
+        return flask.jsonify(resp)
     elif req_type == "SessionEndedRequest":
         resp = dict(BASE_RESPONSE)
         resp["response"] = {
             "shouldEndSession": True
         }
-        del DATAS[session_id]
-        return json.dumps(resp)
+        return flask.jsonify(resp)
     elif req_type == "IntentRequest":
         # TODO validate timestamp
         if "intent" in request:
@@ -60,43 +60,44 @@ def alexa(data=None, *args, **kwargs):
             slots = intent['slots']
 
             if name == "Point" or name == "ConfirmPerson":
-                person = DATAS[session_id].get("person", None)
-                reason = DATAS[session_id].get("reason", "for no reason")
+                attrs["person"] = None
 
                 for slot in slots.values():
                     slot_name = slot["name"]
                     slot_val = slot.get("value", None)
 
                     if slot_name == "Person":
-                        person = slot_val
-                        DATAS[session_id]["person"] = person
+                        attrs["person"] = slot_val
                     elif slot_name == "Reason":
-                        reason = slot_val
-                        DATAS[session_id]["reason"] = reason
+                        attrs["reason"] = slot_val
 
-                if reason and person:
+                if attrs["reason"] == None:
+                    attrs["reason"] = "no reason"
+
+                if attrs["reason"] and attrs["person"]:
                     resp = dict(BASE_RESPONSE)
                     resp["response"] = {
                         "outputSpeech": {
                             "type": "PlainText",
                             "text": "Should I give {} a point for {}?".format(
-                                person, reason)
+                                attrs["person"], attrs["reason"])
                         },
                         "shouldEndSession": False
                     }
-                    return json.dumps(resp)
+                    resp["sessionAttributes"] = attrs
+                    return flask.jsonify(resp)
                 else:
+                    print("Didn't get a name, reprompting")
                     resp = dict(BASE_RESPONSE)
                     resp["response"] = {
-                        "reprompt": {
                             "outputSpeech": {
                                 "type": "PlainText",
-                                "text": "Who should I give a point to?".format(slot_val)
-                            }
-                        },
+                                "text": "Who should I give a point to?"
+                            },
                         "shouldEndSession": False
                     }
-                    return json.dumps(resp)
+                    resp["sessionAttributes"] = attrs
+                    return flask.jsonify(resp)
             elif name == "ConfirmPoint":
                 for slot in slots.values():
                     slot_name = slot["name"]
@@ -111,26 +112,22 @@ def alexa(data=None, *args, **kwargs):
                         resp["response"] = {
                             "outputSpeech": {
                                 "type": "PlainText",
-                                "text": "Point given to {}".format(DATAS[session_id]["person"])
+                                "text": "Point given to {}".format(attrs["person"])
                             },
                         "shouldEndSession": True
                         }
-                        do_tweet(DATAS[session_id]["person"],
-                                 DATAS[session_id]["reason"])
-                        del DATAS[session_id]
-                        return json.dumps(resp)
+                        do_tweet(attrs["person"],
+                                 attrs["reason"])
+                        resp["sessionAttributes"] = attrs
+                        return flask.jsonify(resp)
                     else:
                         resp = dict(BASE_RESPONSE)
                         resp["response"] = {
-                            "outputSpeech": {
-                                "type": "PlainText",
-                                "text": "Canceling"
-                            },
                             "shouldEndSession": True
                         }
-                        del DATAS[session_id]
-                        return json.dumps(resp)
+                        resp["sessionAttributes"] = attrs
+                        return flask.jsonify(resp)
 
     return {'args': repr(args), 'kwargs': repr(kwargs)}
 
-api.run('0.0.0.0', port=8082, debug=True)
+api.run('0.0.0.0', port=80, debug=True)
