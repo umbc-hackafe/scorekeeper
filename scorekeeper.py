@@ -24,7 +24,7 @@ twapi = twitter.Twitter(auth=twitter.OAuth(
 api = flask.Flask(__name__)
 
 def do_tweet(person, reason):
-    status = twapi.update("@xn__hackaf_gva Point to {}: {}".format(person.title(),
+    status = twapi.update(status="@xn__hackaf_gva Point to {}: {}".format(person.title(),
                                                                        reason))
     print("Status:", status)
     print("Person", person, "\nReason", reason)
