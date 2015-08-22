@@ -68,9 +68,10 @@ def _display_thread():
     total_lifetime = len(texts) * 2
 
     for text in texts:
-        SIGN.new_message(text, priority=2, lifetime=total_lifetime)
+        SIGN.new_message(text, priority=2, lifetime=2)
 
 def do_display():
+    time.sleep(4)
     threading.Thread(target=_display_thread).start()
 
 @api.route('/', methods=['POST', 'GET'])
