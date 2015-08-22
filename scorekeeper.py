@@ -49,8 +49,11 @@ def points_for(person):
     return get_points().get(person.lower(), 0)
 
 def do_tweet(person, reason):
+    if reason:
+        if reason.lower().startswith("for "):
+            reason = reason[4:]
     r = twitter.post("https://api.twitter.com/1.1/statuses/update.json",
-                      data={"status": "@xn__hackaf_gva Point to {}: {}".format(person.title(), reason)})
+                      data={"status": "Crazy point to {}: {}".format(person.title(), reason)})
     print("Status:", r.text)
     print("Person", person, "\nReason", reason)
 
