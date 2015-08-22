@@ -1,6 +1,5 @@
 import requests
-from requests_oauthlib import OAuth1
-import twitter
+from requests_oauthlib import OAuth1Session
 import flask
 import json
 
@@ -17,17 +16,16 @@ TWITTER_APP_KEY_SECRET = keys["api_secret"]
 TWITTER_ACCESS_TOKEN = keys["access_token"]
 TWITTER_ACCESS_TOKEN_SECRET = keys["token_secret"]
 
-auth = OAuth1(TWITTER_APP_KEY,
-              TWITTER_APP_KEY_SECRET,
-              TWITTER_ACCESS_TOKEN,
-              TWITTER_ACCESS_TOKEN_SECRET)
+twitter = OAuth1Session(TWITTER_ACCESS_TOKEN,
+                        client_secret=TWITTER_ACCESS_TOKEN_SECRET,
+                        resource_owner_key=TWITTER_APP_KEY,
+                        resource_owner_secret=TWITTER_APP_KEY_SECRET)
 
 api = flask.Flask(__name__)
 
 def do_tweet(person, reason):
-    r = requests.post("https://api.twitter.com/1.1/statuses/update.json",
-                      data={"status": "@xn__hackaf_gva Point to {}: {}".format(person.title(), reason)},
-                      auth=auth)
+    r = twitter.post("https://api.twitter.com/1.1/statuses/update.json",
+                      data={"status": "@xn__hackaf_gva Point to {}: {}".format(person.title(), reason)})
     print("Status:", r.text)
     print("Person", person, "\nReason", reason)
 
