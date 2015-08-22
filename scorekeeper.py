@@ -77,9 +77,20 @@ def alexa():
     attrs.update(data["session"].get("attributes", {}))
 
     if req_type == "LaunchRequest":
+        descs = ["{} has {} points".format(k, v) for (k, v) in
+                 sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
+        pretty_scores = "There are no scores yet."
+        if len(descs) == 1:
+            pretty_scores = ';'.join(descs[:-1]) + '; and ' + descs[-1]
+        elif len(descs) > 1:
+            pretty_scores = ';'.join(descs)
         resp = dict(BASE_RESPONSE)
         resp["response"] = {
-            "shouldEndSession": False
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": "Here is the Hackafe score breakdown. {}".format(pretty_scores)
+            },
+            "shouldEndSession": True
         }
         return flask.jsonify(resp)
     elif req_type == "SessionEndedRequest":
