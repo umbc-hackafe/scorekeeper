@@ -25,6 +25,29 @@ twitter = OAuth1Session(
 
 api = flask.Flask(__name__)
 
+def add_point(person):
+    person = person.lower()
+    with open('.points', 'r+') as p:
+        points = json.load(p)
+        if person in points:
+            points[person] += 1
+        else:
+            points[person] = 1
+        json.dump(points, p)
+
+def get_points():
+    points = {}
+    try:
+        with open('.points') as p:
+            points = json.load(p)
+    except FileNotFoundError:
+        with open('.points', 'w') as p:
+            json.dump({}, p)
+    return points
+
+def points_for(person):
+    return get_points().get(person.lower(), 0)
+
 def do_tweet(person, reason):
     r = twitter.post("https://api.twitter.com/1.1/statuses/update.json",
                       data={"status": "@xn__hackaf_gva Point to {}: {}".format(person.title(), reason)})
@@ -167,11 +190,13 @@ def alexa():
                         confirmed = (slot_val.lower() == "yes")
 
                     if confirmed:
+                        add_point(attrs["person"])
+                        num_points = points_for(attrs["person"])
                         resp = dict(BASE_RESPONSE)
                         resp["response"] = {
                             "outputSpeech": {
                                 "type": "PlainText",
-                                "text": "Point given to {}".format(attrs["person"])
+                                "text": "{} now has {} point{}!".format(attrs["person"], num_points, "" if num_points == 1 else "s")
                             },
                         "shouldEndSession": True
                         }
@@ -189,4 +214,5 @@ def alexa():
 
     return {'args': repr(args), 'kwargs': repr(kwargs)}
 
+get_points()
 api.run('0.0.0.0', port=80, debug=True)
