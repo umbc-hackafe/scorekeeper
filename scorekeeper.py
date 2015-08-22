@@ -68,8 +68,6 @@ def alexa():
             slots = intent['slots']
 
             if name == "Point" or name == "ConfirmPerson":
-                attrs["person"] = None
-
                 for slot in slots.values():
                     slot_name = slot["name"]
                     slot_val = slot.get("value", None)
@@ -78,9 +76,6 @@ def alexa():
                         attrs["person"] = slot_val
                     elif slot_name == "Reason":
                         attrs["reason"] = slot_val
-
-                if attrs["reason"] == None:
-                    attrs["reason"] = "no reason"
 
                 if attrs["reason"] and attrs["person"]:
                     resp = dict(BASE_RESPONSE)
@@ -94,7 +89,7 @@ def alexa():
                     }
                     resp["sessionAttributes"] = attrs
                     return flask.jsonify(resp)
-                else:
+                elif not attrs["person"]:
                     print("Didn't get a name, reprompting")
                     resp = dict(BASE_RESPONSE)
                     resp["response"] = {
@@ -102,6 +97,61 @@ def alexa():
                                 "type": "PlainText",
                                 "text": "Who should I give a point to?"
                             },
+                        "shouldEndSession": False
+                    }
+                    resp["sessionAttributes"] = attrs
+                    return flask.jsonify(resp)
+                elif not attrs["reason"]:
+                    print("Prompting for a reason")
+                    resp = dict(BASE_RESPONSE)
+                    resp["response"] = {
+                        "outputSpeech": {
+                            "type": "PlainText",
+                            "text": "What's the reason?"
+                        },
+                        "shouldEndSession": False
+                    }
+                    resp["sessionAttributes"] = attrs
+                    return flask.jsonify(resp)
+            elif name == "Reason":
+                for slot in slots.values():
+                    slot_name = slot["name"]
+                    slot_val = slot.get("value", None)
+
+                    if slot_name == "Reason":
+                        attrs["reason"] = slot_val
+                if attrs["reason"] and attrs["person"]:
+                    resp = dict(BASE_RESPONSE)
+                    resp["response"] = {
+                        "outputSpeech": {
+                            "type": "PlainText",
+                            "text": "Should I give {} a point for {}?".format(
+                                attrs["person"], attrs["reason"])
+                        },
+                        "shouldEndSession": False
+                    }
+                    resp["sessionAttributes"] = attrs
+                    return flask.jsonify(resp)
+                elif not attrs["person"]:
+                    print("Didn't get a name, reprompting")
+                    resp = dict(BASE_RESPONSE)
+                    resp["response"] = {
+                            "outputSpeech": {
+                                "type": "PlainText",
+                                "text": "Who should I give a point to?"
+                            },
+                        "shouldEndSession": False
+                    }
+                    resp["sessionAttributes"] = attrs
+                    return flask.jsonify(resp)
+                elif not attrs["reason"]:
+                    print("Prompting for a reason")
+                    resp = dict(BASE_RESPONSE)
+                    resp["response"] = {
+                        "outputSpeech": {
+                            "type": "PlainText",
+                            "text": "What's the reason?"
+                        },
                         "shouldEndSession": False
                     }
                     resp["sessionAttributes"] = attrs
