@@ -113,7 +113,7 @@ def alexa():
                     }
                     resp["sessionAttributes"] = attrs
                     return flask.jsonify(resp)
-            elif name == "Reason":
+            elif name == "GiveReason":
                 for slot in slots.values():
                     slot_name = slot["name"]
                     slot_val = slot.get("value", None)
