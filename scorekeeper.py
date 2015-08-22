@@ -1,7 +1,9 @@
+import threading
 import requests
 from requests_oauthlib import OAuth1Session
 import flask
 import json
+import sign
 
 BASE_RESPONSE = {
     "version": "1",
@@ -24,6 +26,8 @@ twitter = OAuth1Session(
 )
 
 api = flask.Flask(__name__)
+
+SIGN = sign.Sign("192.168.4.105", 8800)
 
 def get_points():
     points = {}
@@ -57,6 +61,17 @@ def do_tweet(person, reason):
                       data={"status": "Crazy point to {}: {}".format(person.title(), reason)})
     print("Status:", r.text)
     print("Person", person, "\nReason", reason)
+
+def _display_thread():
+    texts = ["{}: {}".format(*i) for i in
+             sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
+    total_lifetime = len(texts) * 2
+
+    for text in texts:
+        SIGN.add_message(texts, priority=2, lifetime=total_lifetime)
+
+def do_display():
+    threading.Thread(target=_display_thread).start()
 
 @api.route('/', methods=['POST', 'GET'])
 def alexa():
@@ -92,6 +107,7 @@ def alexa():
             },
             "shouldEndSession": True
         }
+        do_display()
         return flask.jsonify(resp)
     elif req_type == "SessionEndedRequest":
         resp = dict(BASE_RESPONSE)
