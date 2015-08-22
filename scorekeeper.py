@@ -28,7 +28,7 @@ def do_tweet(person, reason):
     r = requests.post("https://api.twitter.com/1.1/statuses/update.json",
                       data={"status": "@xn__hackaf_gva Point to {}: {}".format(person.title(), reason)},
                       auth=auth)
-    print("Status:", status)
+    print("Status:", r.text)
     print("Person", person, "\nReason", reason)
 
 @api.route('/', methods=['POST', 'GET'])
