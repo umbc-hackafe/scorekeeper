@@ -61,7 +61,7 @@ class Message:
             "text": self.message,
             "effects": ",".join(self.effects).lower(),
             "priority": self.priority,
-            "expiration": int(self.get_expiration())
+            "expiration": self.get_expiration()
         }
 
         if self.name:
