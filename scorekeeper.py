@@ -46,7 +46,8 @@ def alexa():
     req_type = request["type"]
     session_id = data["session"]["sessionId"]
 
-    attrs = data["session"].get("attributes", {})
+    attrs = {"person": None, "reason": None}
+    attrs.update(data["session"].get("attributes", {}))
 
     if req_type == "LaunchRequest":
         resp = dict(BASE_RESPONSE)
