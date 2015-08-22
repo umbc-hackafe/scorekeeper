@@ -81,9 +81,9 @@ def alexa():
                  sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
         pretty_scores = "There are no scores yet."
         if len(descs) == 1:
-            pretty_scores = ';'.join(descs[:-1]) + '; and ' + descs[-1]
-        elif len(descs) > 1:
             pretty_scores = ';'.join(descs)
+        elif len(descs) > 1:
+            pretty_scores = ';'.join(descs[:-1]) + '; and ' + descs[-1]
         resp = dict(BASE_RESPONSE)
         resp["response"] = {
             "outputSpeech": {
