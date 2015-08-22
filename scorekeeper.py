@@ -93,7 +93,7 @@ def alexa():
 
     if req_type == "LaunchRequest":
         descs = ["{} has {} point{}".format(k, v, '' if v == 1 else 's') for (k, v) in
-                 sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
+                 sorted(get_points().items(), key=lambda n:n[1], reverse=True) if v]
         pretty_scores = "There are no scores yet."
         if len(descs) == 1:
             pretty_scores = ';'.join(descs)
