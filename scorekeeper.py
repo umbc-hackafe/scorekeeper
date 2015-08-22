@@ -70,7 +70,7 @@ def _display_thread():
 
     for text in texts:
         SIGN.new_message(text, priority=1.8, lifetime=1.8)
-        time.sleep(1.95)
+        time.sleep(1.75)
 
 def do_display():
     threading.Thread(target=_display_thread).start()
