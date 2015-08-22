@@ -68,7 +68,7 @@ def _display_thread():
     total_lifetime = len(texts) * 2
 
     for text in texts:
-        SIGN.new_message(texts, priority=2, lifetime=total_lifetime)
+        SIGN.new_message(text, priority=2, lifetime=total_lifetime)
 
 def do_display():
     threading.Thread(target=_display_thread).start()
