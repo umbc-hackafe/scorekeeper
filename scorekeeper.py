@@ -77,7 +77,7 @@ def alexa():
     attrs.update(data["session"].get("attributes", {}))
 
     if req_type == "LaunchRequest":
-        descs = ["{} has {} points".format(k, v) for (k, v) in
+        descs = ["{} has {} point{}".format(k, v, '' if v == 1 else 's') for (k, v) in
                  sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
         pretty_scores = "There are no scores yet."
         if len(descs) == 1:
