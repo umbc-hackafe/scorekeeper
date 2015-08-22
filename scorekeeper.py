@@ -16,10 +16,12 @@ TWITTER_APP_KEY_SECRET = keys["api_secret"]
 TWITTER_ACCESS_TOKEN = keys["access_token"]
 TWITTER_ACCESS_TOKEN_SECRET = keys["token_secret"]
 
-twitter = OAuth1Session(TWITTER_ACCESS_TOKEN,
-                        client_secret=TWITTER_ACCESS_TOKEN_SECRET,
-                        resource_owner_key=TWITTER_APP_KEY,
-                        resource_owner_secret=TWITTER_APP_KEY_SECRET)
+twitter = OAuth1Session(
+    TWITTER_APP_KEY,
+    client_secret=TWITTER_APP_KEY_SECRET,
+    resource_owner_key=TWITTER_ACCESS_TOKEN,
+    resource_owner_secre=TWITTER_ACCESS_TOKEN_SECRET
+)
 
 api = flask.Flask(__name__)
 
