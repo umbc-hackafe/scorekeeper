@@ -25,16 +25,6 @@ twitter = OAuth1Session(
 
 api = flask.Flask(__name__)
 
-def add_point(person):
-    person = person.lower()
-    with open('.points', 'r+') as p:
-        points = json.load(p)
-        if person in points:
-            points[person] += 1
-        else:
-            points[person] = 1
-        json.dump(points, p)
-
 def get_points():
     points = {}
     try:
@@ -44,6 +34,17 @@ def get_points():
         with open('.points', 'w') as p:
             json.dump({}, p)
     return points
+
+def add_point(person):
+    points = get_points()
+    person = person.lower()
+    if person in points:
+        points[person] += 1
+    else:
+        points[person] = 1
+
+    with open('.points', 'w') as p:
+        json.dump(points, p)
 
 def points_for(person):
     return get_points().get(person.lower(), 0)
