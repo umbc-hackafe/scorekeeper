@@ -4,6 +4,7 @@ from requests_oauthlib import OAuth1Session
 import flask
 import json
 import sign
+import time
 
 BASE_RESPONSE = {
     "version": "1",
@@ -63,6 +64,7 @@ def do_tweet(person, reason):
     print("Person", person, "\nReason", reason)
 
 def _display_thread():
+    time.sleep(4)
     texts = ["{}: {}".format(*i) for i in
              sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
     total_lifetime = len(texts) * 2
@@ -71,7 +73,6 @@ def _display_thread():
         SIGN.new_message(text, priority=2, lifetime=2)
 
 def do_display():
-    time.sleep(4)
     threading.Thread(target=_display_thread).start()
 
 @api.route('/', methods=['POST', 'GET'])
