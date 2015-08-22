@@ -64,13 +64,14 @@ def do_tweet(person, reason):
     print("Person", person, "\nReason", reason)
 
 def _display_thread():
-    time.sleep(4)
+    time.sleep(3)
     texts = ["{}: {}".format(*i) for i in
              sorted(get_points().items(), key=lambda n:n[1], reverse=True)]
     total_lifetime = len(texts) * 2
 
     for text in texts:
         SIGN.new_message(text, priority=2, lifetime=2)
+        time.sleep(1.8)
 
 def do_display():
     threading.Thread(target=_display_thread).start()
