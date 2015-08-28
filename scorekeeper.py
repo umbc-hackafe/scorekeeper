@@ -103,28 +103,26 @@ def end(request):
 
 @skill.intent("Point", "ConfirmPerson", "GiveReason")
 def main(request):
+    request.save_slots()
+
     # Save each slot if it's 
-    if request.intent.slots.get("Person"):
-        request.save_slots("Person")
-    elif not request.session["Person"]:
+    if not request.data().get("Person"):
         return request.response("Who should I give a point to?")
 
-    if request.intent.slots.get("Reason"):
-        request.save_slots("Reason")
-    elif not request.session["Reason"]:
+    if not request.data().get("Reason"):
         return request.response("What's the reason?")
 
     return request.response("Should I give {} a point for {}?".format(
-        request.intent.slots["Person"],
-        trim_reason(request.intent.slots["Reason"])))
+        request.data().get("Person"),
+        trim_reason(request.data().get("Reason"))))
 
 @skill.intent("ConfirmPoint")
 def confirm_point(request):
-    if request.intent.slots.get("Confirmed").lower() in (
+    if request.data().get("Confirmed").lower() in (
             "yes", "yeah", "ok", "okay", "yep", "yup"):
 
-        person = request.session["Person"]
-        reason = request.session["Reason"]
+        person = request.data().get("Person")
+        reason = request.data().get("Reason")
         num_points = points_for(person)
 
         do_tweet(person, reason)
