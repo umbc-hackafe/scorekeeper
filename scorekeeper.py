@@ -142,4 +142,6 @@ def score(request):
     return request.response("Whose score do you want to hear?")
 
 get_points()
+
+api.add_url_rule('/', 'pyalexa', skill.flask_target)
 api.run('0.0.0.0', port=80, debug=True)
