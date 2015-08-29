@@ -95,7 +95,7 @@ def launch(request):
 
     do_display()
 
-    return request.response(end=True, speech="Here is the Hackaf\xE9 score breakdown: " + pretty_scores)
+    return request.response(end=True, speech="Here is the Hackafay score breakdown: " + pretty_scores)
 
 @skill.end
 def end(request):
