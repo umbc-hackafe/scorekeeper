@@ -135,6 +135,7 @@ def confirm_point(request):
 def score(request):
     person = request.intent.slots.get("Person")
     if person:
+        add_point(person)
         num_points = points_for(person)
         return request.response("{} now has {} point{}!".format(person, num_points, "" if num_points == 1 else "s"), end=True)
     return request.response("Whose score do you want to hear?")
