@@ -66,7 +66,7 @@ def trim_reason(reason):
 
 def do_tweet(person, reason):
     r = twitter.post("https://api.twitter.com/1.1/statuses/update.json",
-                      data={"status": "Crazy point to {}: {}".format(person.title(), trim_reason(reason))})
+                      data={"status": "Crazy point #{} to {}: {}".format(points_for(person), person.title(), trim_reason(reason))})
     print("Status:", r.text)
     print("Person", person, "\nReason", reason)
 
