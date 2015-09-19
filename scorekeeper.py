@@ -144,4 +144,4 @@ def score(request):
 get_points()
 
 api.add_url_rule('/', 'pyalexa', skill.flask_target, methods=['POST'])
-api.run('0.0.0.0', port=80, debug=True)
+api.run('0.0.0.0', port=8081, debug=True)
