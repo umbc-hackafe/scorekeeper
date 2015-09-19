@@ -33,7 +33,7 @@ api = flask.Flask(__name__)
 
 skill = pyalexa.Skill(app_id=APP_ID)
 
-SIGN = sign.Sign("192.168.4.105", 8800)
+SIGN = sign.Sign("sign", 8800)
 
 def get_points():
     points = {}
